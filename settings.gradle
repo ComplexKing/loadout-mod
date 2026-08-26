@@ -1,0 +1,19 @@
+pluginManagement {
+	repositories {
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
+// Lets Gradle fetch a JDK 25 toolchain itself. Minecraft 26.1+ requires Java 25 and this
+// machine has 17, 21 and 25-under-Gradle only; without this the build fails with
+// "release version 25 not supported".
+plugins {
+	id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'loadout-mod'

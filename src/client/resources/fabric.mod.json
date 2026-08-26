@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "loadout",
+	"version": "${version}",
+	"name": "Loadout",
+	"description": "Companion mod for the Loadout launcher. Marks players who are also using it.",
+	"authors": ["ComplexKing"],
+	"contact": {
+		"homepage": "https://github.com/ComplexKing/loadout",
+		"sources": "https://github.com/ComplexKing/loadout"
+	},
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": ["dev.loadout.mod.LoadoutMod"]
+	},
+	"mixins": [
+		{
+			"config": "loadout.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.0",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

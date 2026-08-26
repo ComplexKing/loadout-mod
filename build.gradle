@@ -1,0 +1,64 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+repositories {
+	maven {
+		name = 'TerraformersMC'
+		url = 'https://maven.terraformersmc.com/releases/'
+	}
+}
+
+loom {
+	// The same split Bask uses, and for the same reason: it is the arrangement Loom
+	// actually puts the client classes on the classpath for. Everything here is client
+	// code -- this mod draws things and reads what the launcher told it, none of which
+	// belongs on a server.
+	splitEnvironmentSourceSets()
+
+	mods {
+		"loadout" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+	runtimeOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+}
+
+java {
+	// 25, because Minecraft 26.1+ requires it.
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(25)
+	}
+	withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = 'UTF-8'
+	it.options.release = 25
+}
+
+processResources {
+	inputs.property 'version', project.version
+
+	filesMatching('fabric.mod.json') {
+		expand 'version': project.version
+	}
+}
+
+jar {
+	from('LICENSE') {
+		rename { "${it}_${project.base.archivesName.get()}" }
+	}
+}

@@ -1,0 +1,40 @@
+package dev.loadout.mod;
+
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.minecraft.client.Minecraft;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The Loadout companion mod.
+ *
+ * <p>Client only, and small on purpose. It reports what the launcher told it, marks
+ * players known to be using the launcher, and does nothing else -- a mod that ships with
+ * a launcher has to be the kind of thing somebody is happy to have running, which means
+ * it should be obvious what it does and short enough to read.
+ */
+public final class LoadoutMod implements ClientModInitializer {
+	public static final String MOD_ID = "loadout";
+	private static final Logger LOG = LoggerFactory.getLogger("Loadout");
+
+	@Override
+	public void onInitializeClient() {
+		LOG.info("Loadout companion starting: {}", LaunchInfo.describe());
+
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			// Granted on join rather than at startup, because the local player's UUID is
+			// only settled once there is a session.
+			if (LaunchInfo.launchedByLoadout()) {
+				var player = Minecraft.getInstance().player;
+				if (player != null) {
+					BadgeRegistry.grant(player.getUUID(), BadgeRegistry.LOADOUT);
+				}
+			}
+		});
+
+		// Badges are knowledge about one session -- who was on that server, at that time.
+		// Carrying them to the next server would mark players who are not there.
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> BadgeRegistry.clear());
+	}
+}
