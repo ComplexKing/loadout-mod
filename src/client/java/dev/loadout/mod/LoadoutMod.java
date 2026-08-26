@@ -1,8 +1,14 @@
 package dev.loadout.mod;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,5 +57,34 @@ public final class LoadoutMod implements ClientModInitializer {
 		// Badges are knowledge about one session -- who was on that server, at that time.
 		// Carrying them to the next server would mark players who are not there.
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> BadgeRegistry.clear());
+
+		registerKeybind();
+	}
+
+	/**
+	 * The key that opens the mod list.
+	 *
+	 * <p>Unbound would be safer against clashes, but a feature nobody can find is a feature
+	 * nobody uses. Backslash is close to nothing else and is easy to change.
+	 */
+	private void registerKeybind() {
+		KeyMapping.Category category =
+				KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "loadout"));
+
+		KeyMapping open = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+				"key.loadout.open",
+				InputConstants.Type.KEYSYM,
+				GLFW.GLFW_KEY_BACKSLASH,
+				category));
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			// A while loop rather than an if: consumeClick drains a queue, and presses that
+			// happened during a lagging tick would otherwise be silently dropped.
+			while (open.consumeClick()) {
+				if (client.gui.screen() == null) {
+					client.gui.setScreen(new LoadoutScreen(null));
+				}
+			}
+		});
 	}
 }
