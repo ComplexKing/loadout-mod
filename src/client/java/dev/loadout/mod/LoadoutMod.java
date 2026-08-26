@@ -18,9 +18,24 @@ public final class LoadoutMod implements ClientModInitializer {
 	public static final String MOD_ID = "loadout";
 	private static final Logger LOG = LoggerFactory.getLogger("Loadout");
 
+	/** The launcher that started this game, when there is one. */
+	private static LauncherApi launcher;
+
+	public static java.util.Optional<LauncherApi> launcher() {
+		return java.util.Optional.ofNullable(launcher);
+	}
+
 	@Override
 	public void onInitializeClient() {
 		LOG.info("Loadout companion starting: {}", LaunchInfo.describe());
+
+		// Looked up once. Whether the launcher is reachable is checked at the moment it is
+		// used rather than now -- it can be closed while the game runs, and a value cached
+		// at startup would be a stale promise.
+		launcher = LauncherApi.available().orElse(null);
+		if (launcher != null) {
+			LOG.info("Connected to the launcher, managing instance '{}'", launcher.instanceName());
+		}
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			// Granted on join rather than at startup, because the local player's UUID is
