@@ -28,8 +28,8 @@ import java.util.Optional;
  * <p>The token handed to the game is not the one the launcher's own window uses. Anything
  * in this JVM can read a system property, so whatever is put there has to be something it
  * is acceptable for every mod in the pack to hold. That token reaches a deliberately small
- * set of endpoints -- read this instance, turn things on and off, install -- and is
- * refused for accounts, settings, deleting an instance, or launching anything.
+ * set of endpoints -- read this instance, turn things on and off, install, and start a
+ * successor to this game -- and is refused for accounts, settings, and deleting anything.
  *
  * <h2>What it cannot do</h2>
  *
@@ -38,9 +38,9 @@ import java.util.Optional;
  * mixins are applied once. So installing from here changes what the *next* launch has,
  * and the honest thing is to say so rather than to appear to have done something.
  *
- * <p>Resource packs, shader packs and data packs are different -- the game reloads those
- * on demand -- which is why they are worth treating separately rather than lumping
- * everything under one word.
+ * <p>Resource packs are different -- the game reloads those on demand -- and do not come
+ * through here at all: {@link LivePacks} reads and changes them through Minecraft's own
+ * repository, because for "what is loaded right now" the game is the authority.
  */
 public final class LauncherApi {
 	private static final String PORT_PROPERTY = "loadout.api.port";

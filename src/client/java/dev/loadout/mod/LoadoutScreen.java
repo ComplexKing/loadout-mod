@@ -28,9 +28,13 @@ import net.minecraft.network.chat.Component;
  *
  * <p>So this screen is honest about which half of the job it is doing. Turning something
  * on or off is recorded against the next launch and labelled that way, and the footer says
- * how many changes are waiting rather than pretending they have happened. Resource packs
- * and shaders are the genuinely live half and belong on their own screen; lumping them in
- * here under one word would make both halves confusing.
+ * how many changes are waiting rather than pretending they have happened. Once something
+ * is waiting, the footer also offers to spend the restart there and then and put the player
+ * back where they were -- see {@link Rejoin}, which is what makes a queued change worth
+ * making at all.
+ *
+ * <p>The genuinely live half lives on {@link LoadoutPacksScreen}. Lumping the two together
+ * under one word would make both harder to trust.
  */
 public final class LoadoutScreen extends Screen {
 	private static final Component TITLE = Component.literal("Loadout");
@@ -118,6 +122,7 @@ public final class LoadoutScreen extends Screen {
 						.append(Component.literal("  ").append(instanceLabel())
 								.withStyle(ChatFormatting.GRAY)),
 				this.font));
+		this.root.addChild(Tabs.row(this, this.parent));
 
 		if (this.loading) {
 			this.root.addChild(new StringWidget(Component.literal("Reading the mod list..."), this.font));
