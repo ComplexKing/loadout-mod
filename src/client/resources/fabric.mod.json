@@ -3,8 +3,10 @@
 	"id": "loadout",
 	"version": "${version}",
 	"name": "Loadout",
-	"description": "Companion mod for the Loadout launcher. Marks players who are also using it.",
-	"authors": ["ComplexKing"],
+	"description": "Manage an instance's mods from inside the game. Toggle mods, switch resource packs live, restart straight back into the server or world you were in, and see what your frame times actually look like. Companion to the Loadout launcher.",
+	"authors": [
+		"ComplexKing"
+	],
 	"contact": {
 		"homepage": "https://github.com/ComplexKing/loadout",
 		"sources": "https://github.com/ComplexKing/loadout"
@@ -13,7 +15,12 @@
 	"icon": "assets/loadout/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": ["dev.loadout.mod.LoadoutMod"]
+		"client": [
+			"dev.loadout.mod.LoadoutMod"
+		],
+		"modmenu": [
+			"dev.loadout.mod.ModMenuIntegration"
+		]
 	},
 	"mixins": [
 		{
@@ -25,6 +32,6 @@
 		"fabricloader": ">=0.19.0",
 		"minecraft": "~26.2",
 		"java": ">=25",
-		"fabric-api": "*"
+		"fabric-api": ">=0.150.0"
 	}
 }
