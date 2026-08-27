@@ -61,7 +61,11 @@ tasks.withType(JavaCompile).configureEach {
 	it.options.release = 25
 }
 
-processResources {
+// Both resource tasks, not just the main one. splitEnvironmentSourceSets puts
+// fabric.mod.json under src/client, which processResources never sees -- so the version
+// placeholder went into the jar unexpanded and every build so far has shipped a mod
+// literally versioned "${version}".
+tasks.withType(ProcessResources).configureEach {
 	inputs.property 'version', project.version
 
 	filesMatching('fabric.mod.json') {

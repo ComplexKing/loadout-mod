@@ -10,6 +10,7 @@
 		"sources": "https://github.com/ComplexKing/loadout"
 	},
 	"license": "MIT",
+	"icon": "assets/loadout/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"client": ["dev.loadout.mod.LoadoutMod"]
