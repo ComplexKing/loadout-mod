@@ -2,7 +2,9 @@ package dev.loadout.mod;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
 
 /**
  * Turning a badge into something that can sit beside a name.
@@ -15,14 +17,27 @@ import net.minecraft.network.chat.MutableComponent;
  */
 public final class NameBadges {
 	/**
-	 * The mark itself.
+	 * The mark itself: a glyph in a font this mod ships.
 	 *
-	 * <p>A character rather than an image. Drawing a texture into a name tag means owning
-	 * its layout -- width, baseline, and the background that sizes itself to the text --
-	 * and every mod that has tried has fought every other mod doing the same. A glyph is
-	 * measured and positioned by the same code as the name, so it cannot disagree with it.
+	 * <p>Still a glyph rather than an image, for the original reason. Drawing a texture
+	 * into a name tag means owning its layout -- width, baseline, and the background that
+	 * sizes itself to the text -- and every mod that has tried has fought every other mod
+	 * doing the same. A glyph is measured and positioned by the same code as the name.
+	 *
+	 * <p>But a borrowed glyph brings someone else's metrics with it. This started as
+	 * U+25C6, which Minecraft renders from a unicode page whose ascent suits the rest of
+	 * that page and nothing else -- so the mark sat visibly off the line the letters were
+	 * on. Shipping the glyph means declaring the metrics, and badge.json declares the
+	 * default font's own: height 8, ascent 7. It now sits where a capital letter would.
+	 *
+	 * <p>Drawn white with grey shading rather than in colour, so the text colour tints it
+	 * and the two faces stay a light and a dark shade of whatever that colour is.
 	 */
-	private static final String MARK = "\u25C6";
+	private static final String MARK = "\uE000";
+
+	/** The font this mod ships, which is where {@link #MARK} lives. */
+	private static final FontDescription FONT = new FontDescription.Resource(
+			Identifier.fromNamespaceAndPath(LoadoutMod.MOD_ID, "badge"));
 
 	private NameBadges() {
 	}
@@ -34,6 +49,7 @@ public final class NameBadges {
 	public static Component decorate(Component name, BadgeRegistry.Badge badge) {
 		MutableComponent mark = Component.literal(MARK + " ")
 				.withStyle(style -> style
+						.withFont(FONT)
 						.withColor(ChatFormatting.GREEN)
 						.withHoverEvent(hoverText(badge)));
 
