@@ -168,13 +168,25 @@ public final class LoadoutScreen extends Screen {
 			}).width(this.font.width(label) + 20).build());
 		}
 
+		footer.addChild(Button.builder(
+				Component.literal(dev.loadout.mod.perf.PerfOverlay.visible()
+						? "Hide frame times"
+						: "Frame times"),
+				button -> {
+					// Discoverable here as well as on F6. A measurement nobody can find is
+					// not evidence for anything.
+					dev.loadout.mod.perf.PerfOverlay.setVisible(
+							!dev.loadout.mod.perf.PerfOverlay.visible());
+					rebuild();
+				}).width(110).build());
+
 		footer.addChild(Button.builder(Component.literal("Refresh"), button -> {
 			this.loading = true;
 			rebuild();
 			refresh();
-		}).width(100).build());
+		}).width(80).build());
 		footer.addChild(Button.builder(CommonComponents.GUI_DONE,
-				button -> this.minecraft.gui.setScreen(this.parent)).width(100).build());
+				button -> this.minecraft.gui.setScreen(this.parent)).width(80).build());
 		this.root.addChild(footer);
 
 		this.root.arrangeElements();

@@ -10,6 +10,7 @@ repositories {
 		name = 'TerraformersMC'
 		url = 'https://maven.terraformersmc.com/releases/'
 	}
+	mavenCentral()
 }
 
 loom {
@@ -34,6 +35,17 @@ dependencies {
 
 	compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 	runtimeOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+	// For the few classes here that are plain arithmetic and touch nothing from the game.
+	// The overlay exists to replace claims about performance with numbers, so its own
+	// numbers had better be right.
+	testImplementation platform('org.junit:junit-bom:5.11.4')
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
 }
 
 java {

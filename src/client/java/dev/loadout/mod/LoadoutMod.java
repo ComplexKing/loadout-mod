@@ -62,6 +62,10 @@ public final class LoadoutMod implements ClientModInitializer {
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> BadgeRegistry.clear());
 
 		registerKeybind();
+
+		// Registered always, drawn only when switched on. Registering it lazily would mean
+		// deciding where in the HUD order it goes at an arbitrary moment.
+		dev.loadout.mod.perf.PerfOverlay.register();
 	}
 
 	/**
@@ -109,6 +113,15 @@ public final class LoadoutMod implements ClientModInitializer {
 				GLFW.GLFW_KEY_BACKSLASH,
 				category));
 
+		// F6 because vanilla binds nothing to it. If somebody else has, Minecraft's own
+		// controls screen shows the clash and lets them settle it, which is more than a
+		// mod deciding for them.
+		KeyMapping perf = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+				"key.loadout.perf",
+				InputConstants.Type.KEYSYM,
+				GLFW.GLFW_KEY_F6,
+				category));
+
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			// A while loop rather than an if: consumeClick drains a queue, and presses that
 			// happened during a lagging tick would otherwise be silently dropped.
@@ -116,6 +129,11 @@ public final class LoadoutMod implements ClientModInitializer {
 				if (client.gui.screen() == null) {
 					client.gui.setScreen(new LoadoutScreen(null));
 				}
+			}
+
+			while (perf.consumeClick()) {
+				dev.loadout.mod.perf.PerfOverlay.setVisible(
+						!dev.loadout.mod.perf.PerfOverlay.visible());
 			}
 		});
 	}
