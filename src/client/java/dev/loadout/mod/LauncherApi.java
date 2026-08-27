@@ -149,6 +149,23 @@ public final class LauncherApi {
 	}
 
 	/**
+	 * Tells the launcher this game finished starting.
+	 *
+	 * <p>Worth a whole endpoint because nothing outside the process can tell the difference.
+	 * From the launcher's side a game sitting happily at the menu and one that died before
+	 * the window opened look identical: a process that was running and then was not. From
+	 * in here it is not ambiguous at all -- if this line runs, Fabric resolved the mod list,
+	 * every mixin applied, and the client is up.
+	 *
+	 * <p>What the launcher does with it is remember the mod set as one that works, so that
+	 * "it will not start any more" has an answer better than reading four thousand lines
+	 * of log.
+	 */
+	public void reportStarted() throws IOException, InterruptedException {
+		send("POST", "/profiles/" + encode(this.instance) + "/started", "{}");
+	}
+
+	/**
 	 * Starts a fresh game with the current mod set, optionally rejoining somewhere.
 	 *
 	 * <p>The one endpoint here that has an effect outside the launcher's own records, and

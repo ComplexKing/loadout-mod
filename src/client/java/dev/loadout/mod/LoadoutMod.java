@@ -2,6 +2,7 @@ package dev.loadout.mod;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -43,6 +44,8 @@ public final class LoadoutMod implements ClientModInitializer {
 			LOG.info("Connected to the launcher, managing instance '{}'", launcher.instanceName());
 		}
 
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> reportStarted());
+
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			// Granted on join rather than at startup, because the local player's UUID is
 			// only settled once there is a session.
@@ -59,6 +62,35 @@ public final class LoadoutMod implements ClientModInitializer {
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> BadgeRegistry.clear());
 
 		registerKeybind();
+	}
+
+	/**
+	 * Tells the launcher this game got all the way up.
+	 *
+	 * <p>Fired once, from CLIENT_STARTED, which is as late as "starting" goes: mods are
+	 * resolved, mixins are applied and the window exists. A game that fails before this
+	 * point never reports, and that silence is exactly the signal -- the launcher can then
+	 * offer the last mod set that did get here.
+	 *
+	 * <p>On a worker thread and failing quietly. This is bookkeeping; it must not delay the
+	 * first frame, and a launcher that has already been closed is an ordinary situation
+	 * rather than something to tell somebody about.
+	 */
+	private static void reportStarted() {
+		LauncherApi api = launcher;
+		if (api == null) {
+			return;
+		}
+
+		Thread.ofVirtual().name("loadout-started").start(() -> {
+			try {
+				api.reportStarted();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			} catch (Exception e) {
+				LOG.debug("Could not tell the launcher we started", e);
+			}
+		});
 	}
 
 	/**
