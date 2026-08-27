@@ -142,6 +142,27 @@ public final class LoadoutScreen extends Screen {
 
 		LinearLayout footer = LinearLayout.horizontal();
 		footer.defaultCellSetting().padding(4);
+
+		// Offered only when something is waiting. A restart button on a screen with no
+		// pending change is an invitation to lose two minutes for nothing.
+		if (!this.pending.isEmpty()) {
+			var target = Rejoin.current().orElse(null);
+			Component label = Component.literal(target == null
+							? "Apply and restart"
+							: "Apply and rejoin " + target.label())
+					.withStyle(ChatFormatting.GREEN);
+
+			footer.addChild(Button.builder(label, button -> {
+				// Disabled rather than removed: the restart takes a moment to begin, and a
+				// second click would ask the launcher for a second game.
+				button.active = false;
+				Rejoin.restart(target, error -> {
+					this.problem = error;
+					rebuild();
+				});
+			}).width(this.font.width(label) + 20).build());
+		}
+
 		footer.addChild(Button.builder(Component.literal("Refresh"), button -> {
 			this.loading = true;
 			rebuild();

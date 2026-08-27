@@ -148,6 +148,23 @@ public final class LauncherApi {
 		return string(response, "jobId", null);
 	}
 
+	/**
+	 * Starts a fresh game with the current mod set, optionally rejoining somewhere.
+	 *
+	 * <p>The one endpoint here that has an effect outside the launcher's own records, and
+	 * the reason the narrow token is allowed to reach it: a change that only applies next
+	 * launch is worthless unless the next launch is cheap to reach.
+	 *
+	 * @param type "multiplayer" or "singleplayer", or null to start at the menu
+	 */
+	public void relaunch(String type, String target) throws IOException, InterruptedException {
+		String body = type == null || target == null
+				? "{}"
+				: "{\"quickPlay\":{\"type\":\"" + type + "\",\"target\":\"" + target + "\"}}";
+
+		send("POST", "/profiles/" + encode(this.instance) + "/launch", body);
+	}
+
 	public JsonObject search(String query, String type) throws IOException, InterruptedException {
 		return get("/search?profile=" + encode(this.instance)
 				+ "&q=" + encode(query)
