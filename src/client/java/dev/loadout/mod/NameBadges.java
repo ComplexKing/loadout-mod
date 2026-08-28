@@ -53,9 +53,21 @@ public final class NameBadges {
 						.withColor(ChatFormatting.GREEN)
 						.withHoverEvent(hoverText(badge)));
 
+		// Both hang off an empty root rather than the name hanging off the mark.
+		//
+		// A sibling inherits its parent's resolved style -- Component.visit passes the
+		// parent's style down -- so appending the name to the mark handed the name the
+		// mark's entire style. It came out green, it carried the badge's tooltip, and
+		// worst of all it inherited the badge font, which has exactly one glyph in it:
+		// every letter of the name became a missing-glyph box.
+		//
+		// An empty root sets nothing, so the two sit side by side and each keeps its own.
+		//
 		// copy() because a Component handed back by the game may be shared, and appending
 		// to it in place would change the name everywhere else it is used.
-		return mark.append(name.copy());
+		return Component.empty()
+				.append(mark)
+				.append(name.copy());
 	}
 
 	private static net.minecraft.network.chat.HoverEvent hoverText(BadgeRegistry.Badge badge) {
