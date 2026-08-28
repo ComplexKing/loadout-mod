@@ -1,6 +1,12 @@
 {
 	"providers": [
 		{
+			"type": "space",
+			"advances": {
+				" ": 4
+			}
+		},
+		{
 			"type": "bitmap",
 			"file": "loadout:font/badge.png",
 			"height": 8,
