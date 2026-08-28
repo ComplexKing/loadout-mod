@@ -8,8 +8,9 @@
 		"ComplexKing"
 	],
 	"contact": {
-		"homepage": "https://github.com/ComplexKing/loadout",
-		"sources": "https://github.com/ComplexKing/loadout"
+		"homepage": "https://complexking.github.io/loadout/",
+		"sources": "https://github.com/ComplexKing/loadout-mod",
+		"issues": "https://github.com/ComplexKing/loadout-mod/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/loadout/icon.png",
